@@ -1,0 +1,55 @@
+[gd_scene load_steps=7 format=3 uid="uid://c4lwgbsgn72vk"]
+
+[ext_resource type="Script" path="res://scenes/player/xr_player.gd" id="1_kyh2w"]
+[ext_resource type="Script" path="res://scenes/player/controller.gd" id="2_w643n"]
+[ext_resource type="Script" path="res://scenes/player/action_movement.gd" id="3_1a7vt"]
+[ext_resource type="Script" path="res://scenes/player/action_rotation.gd" id="4_lai38"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_emwv7"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_4sqya"]
+
+[node name="XRPlayer" type="XROrigin3D" node_paths=PackedStringArray("left_controller", "right_controller")]
+current = true
+script = ExtResource("1_kyh2w")
+left_controller = NodePath("LeftController")
+right_controller = NodePath("RightController")
+
+[node name="XRCamera" type="XRCamera3D" parent="."]
+
+[node name="LeftController" type="XRController3D" parent="." node_paths=PackedStringArray("physical_hand")]
+tracker = &"left_hand"
+script = ExtResource("2_w643n")
+physical_hand = NodePath("../LeftPhysicalHand")
+
+[node name="Movement" type="Node3D" parent="LeftController"]
+script = ExtResource("3_1a7vt")
+action = "grip_click"
+
+[node name="RightController" type="XRController3D" parent="." node_paths=PackedStringArray("physical_hand")]
+tracker = &"right_hand"
+script = ExtResource("2_w643n")
+physical_hand = NodePath("../RightPhysicalHand")
+
+[node name="Movement" type="Node3D" parent="RightController"]
+script = ExtResource("3_1a7vt")
+action = "grip_click"
+
+[node name="Rotation" type="Node3D" parent="RightController"]
+script = ExtResource("4_lai38")
+
+[node name="LeftPhysicalHand" type="CharacterBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LeftPhysicalHand"]
+shape = SubResource("SphereShape3D_emwv7")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="LeftPhysicalHand"]
+mesh = SubResource("SphereMesh_4sqya")
+
+[node name="RightPhysicalHand" type="CharacterBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RightPhysicalHand"]
+shape = SubResource("SphereShape3D_emwv7")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RightPhysicalHand"]
+mesh = SubResource("SphereMesh_4sqya")

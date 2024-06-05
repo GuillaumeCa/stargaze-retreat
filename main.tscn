@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://clg28sgt38q65"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_13g0i"]
+[ext_resource type="PackedScene" uid="uid://c4lwgbsgn72vk" path="res://scenes/player/xr_player.tscn" id="2_t6lkl"]
+[ext_resource type="Script" path="res://xr_config.gd" id="2_y4xff"]
+
+[node name="Main" type="Node3D" node_paths=PackedStringArray("xr_player", "xr_config")]
+script = ExtResource("1_13g0i")
+xr_player = NodePath("XRPlayer")
+xr_config = NodePath("XRConfig")
+
+[node name="XRConfig" type="Node" parent="."]
+script = ExtResource("2_y4xff")
+
+[node name="XRPlayer" parent="." instance=ExtResource("2_t6lkl")]
