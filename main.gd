@@ -23,10 +23,8 @@ func _on_focus():
 		started = true
 		xr_config.recenter()
 
-	xr_player.left_controller.show()
-	xr_player.right_controller.show()
+	xr_player.on_visible()
 
 func _on_focus_lost() -> void:
-	xr_player.left_controller.hide()
-	xr_player.right_controller.hide()
+	xr_player.on_hidden()
 
