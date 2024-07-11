@@ -1,9 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://c4lwgbsgn72vk"]
+[gd_scene load_steps=9 format=3 uid="uid://c4lwgbsgn72vk"]
 
 [ext_resource type="Script" path="res://scenes/player/xr_player.gd" id="1_kyh2w"]
 [ext_resource type="Script" path="res://scenes/player/controller.gd" id="2_w643n"]
 [ext_resource type="Script" path="res://scenes/player/action_movement.gd" id="3_1a7vt"]
 [ext_resource type="Script" path="res://scenes/player/action_rotation.gd" id="4_lai38"]
+[ext_resource type="PackedScene" uid="uid://qq451u0j8gv1" path="res://scenes/constellation_display.tscn" id="5_08tcu"]
+[ext_resource type="PackedScene" uid="uid://dcnfo2d1hndgr" path="res://scenes/player/lenses.tscn" id="5_cuj67"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_emwv7"]
 radius = 0.05
@@ -22,6 +24,9 @@ right_controller = NodePath("RightController")
 
 [node name="XRCamera" type="XRCamera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+
+[node name="RayCast3D" type="RayCast3D" parent="XRCamera"]
+target_position = Vector3(0, 0, -140)
 
 [node name="LeftController" type="XRController3D" parent="." node_paths=PackedStringArray("physical_hand")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 1.2, 0)
@@ -55,11 +60,18 @@ shape = SubResource("SphereShape3D_emwv7")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="LeftPhysicalHand"]
 mesh = SubResource("SphereMesh_4sqya")
 
+[node name="ConstellationDisplay" parent="LeftPhysicalHand" instance=ExtResource("5_08tcu")]
+transform = Transform3D(1, 0, 0, 0, 0.93338, 0.358889, 0, -0.358889, 0.93338, 0.0041976, 0.11048, -0.0481135)
+
 [node name="RightPhysicalHand" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 1.2, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="RightPhysicalHand"]
 shape = SubResource("SphereShape3D_emwv7")
+
+[node name="Lenses" parent="RightPhysicalHand" instance=ExtResource("5_cuj67")]
+transform = Transform3D(1, 0, 0, 0, -0.281487, 0.959565, 0, -0.959565, -0.281487, -0.174466, 0, -0.00344847)
+visible = false
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="RightPhysicalHand"]
 mesh = SubResource("SphereMesh_4sqya")

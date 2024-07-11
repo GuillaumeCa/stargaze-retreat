@@ -1,0 +1,28 @@
+[gd_scene load_steps=7 format=3 uid="uid://crgpb2l5smxdm"]
+
+[ext_resource type="PackedScene" uid="uid://dvhisy4xerpnx" path="res://assets/models/tree.glb" id="1_bdyey"]
+[ext_resource type="Shader" path="res://assets/materials/tree.gdshader" id="2_xfvo4"]
+[ext_resource type="Texture2D" uid="uid://b067p1ged31me" path="res://assets/textures/tree/Leaf001_4K_Color.jpg" id="3_j3cs3"]
+[ext_resource type="Texture2D" uid="uid://drvcq1u7x4myr" path="res://assets/textures/tree/Leaf001_4K_Opacity.jpg" id="4_orspi"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wgo73"]
+albedo_color = Color(0.214844, 0.137117, 0.0269417, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8ypmv"]
+render_priority = 0
+shader = ExtResource("2_xfvo4")
+shader_parameter/threshold = 0.129
+shader_parameter/leaf_albedo = ExtResource("3_j3cs3")
+shader_parameter/leaf_alpha = ExtResource("4_orspi")
+
+[node name="Tree" type="Node3D"]
+
+[node name="tree2" parent="." instance=ExtResource("1_bdyey")]
+
+[node name="tree" parent="tree2" index="0"]
+surface_material_override/0 = SubResource("StandardMaterial3D_wgo73")
+
+[node name="leaves" parent="tree2" index="1"]
+surface_material_override/0 = SubResource("ShaderMaterial_8ypmv")
+
+[editable path="tree2"]

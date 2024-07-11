@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3 uid="uid://dcnfo2d1hndgr"]
+
+[ext_resource type="PackedScene" uid="uid://bqc6d46iwpuqn" path="res://assets/models/lenses.glb" id="1_vgjr1"]
+[ext_resource type="Texture2D" uid="uid://vyo0ctt2srq8" path="res://assets/textures/Palette.png" id="2_g0guw"]
+[ext_resource type="PackedScene" uid="uid://qq451u0j8gv1" path="res://scenes/constellation_display.tscn" id="3_24q3f"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i74fc"]
+albedo_texture = ExtResource("2_g0guw")
+albedo_texture_force_srgb = true
+roughness = 0.77
+texture_filter = 0
+
+[node name="Lenses" type="Node3D"]
+
+[node name="lenses_mesh" parent="." instance=ExtResource("1_vgjr1")]
+
+[node name="lenses" parent="lenses_mesh" index="0"]
+surface_material_override/0 = SubResource("StandardMaterial3D_i74fc")
+
+[node name="ConstellationDisplay" parent="." instance=ExtResource("3_24q3f")]
+
+[editable path="lenses_mesh"]

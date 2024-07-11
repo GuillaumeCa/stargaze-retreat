@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://cutaxfnr8ikko"]
+
+[ext_resource type="Material" uid="uid://d4kdyepm3qs3q" path="res://assets/materials/starfield.material" id="1_2dqys"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_n57g4"]
+size = Vector2(0.5, 0.5)
+
+[node name="Star" type="MeshInstance3D"]
+mesh = SubResource("QuadMesh_n57g4")
+surface_material_override/0 = ExtResource("1_2dqys")

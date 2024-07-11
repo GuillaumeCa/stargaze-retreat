@@ -2,8 +2,10 @@ extends Node3D
 
 @export_enum("grip_click", "ax_button", "by_button") var action = ""
 @export var speed = 10
+@export var active = false
 
 var player: XRPlayer
+
 
 @onready var controller: XRController3D = get_parent()
 
@@ -25,6 +27,9 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	if !active:
+		return
+	
 	if is_pressed:
 		movement_lock = true
 		prev_position.y = global_position.y # no movement on y axis

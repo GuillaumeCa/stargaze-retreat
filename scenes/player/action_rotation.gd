@@ -6,13 +6,14 @@ extends Node3D
 
 @onready var controller: XRController3D = get_parent()
 
-@onready var camera = player.get_node("XRCamera") as XRCamera3D
+@onready var camera
 
 var pressed = false
 var player: XRPlayer
 
 func _ready() -> void:
 	player = owner
+	camera = player.get_node("XRCamera") as XRCamera3D
 
 func _process(delta: float) -> void:
 	if controller:
