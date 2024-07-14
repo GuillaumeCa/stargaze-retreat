@@ -8,6 +8,8 @@ extends Node3D
 @export var starfield: StarField
 
 
+var shooting_star_scene = preload("res://scenes/shootingstar.tscn")
+
 var init_position: Vector3
 
 var started = false
@@ -88,8 +90,15 @@ func _on_stars_on_next_guess(to_guess: Variant) -> void:
 
 func _on_stars_on_success() -> void:
 	xr_player.left_controller.trigger_haptic_pulse("haptic", 80, 1, 0.2, 0)
-	xr_player.left_controller.trigger_haptic_pulse("haptic", 80, 1, 2, 0.5)
+	xr_player.left_controller.trigger_haptic_pulse("haptic", 80, 1, 1, 1)
 	xr_player.constellation_display.set_success()
 
 
 
+
+
+func _on_timer_timeout() -> void:
+	var scn = shooting_star_scene.instantiate() as RigidBody3D
+	scn.position = Vector3(0, 50, -7)
+	add_child(scn)
+	scn.apply_impulse(Vector3(randf_range(-1, 1), 0, randf_range(-1, 1)) * 70)

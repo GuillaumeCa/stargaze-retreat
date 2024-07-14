@@ -4,6 +4,9 @@ class_name StarField
 @export var select_mesh: MeshInstance3D
 @export var select_label: Label3D
 
+@export var con_default_mat: ORMMaterial3D
+@export var con_highlight_mat: ORMMaterial3D
+
 signal on_next_guess(to_guess)
 signal on_success
 
@@ -101,15 +104,21 @@ func highlight_constel(con, pos: Vector3):
 		constellation_labels[con].show()
 	
 	constellation_links[con].show()
-
+	constellation_links[con].material_override = con_highlight_mat
+	for c in constellation_links:
+		if c != con:
+			constellation_links[c].material_override = con_default_mat
+	
 
 func reset_highlight():
 	select_label.hide()
 	select_mesh.hide()
 	
 	for con in constellation_links:
+		constellation_links[con].material_override = con_default_mat
+		
 		if con not in constellations_revealed: 
-			constellation_links[con].hide()
+			#constellation_links[con].hide()
 			
 			if won:
 				constellation_labels[con].hide()
@@ -152,11 +161,9 @@ func generate_stars():
 		i += 1
 
 func generate_constellations():
-	var mat = ORMMaterial3D.new()
-	mat.albedo_color = Color.WHITE.darkened(0.8)
-	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	var mat = con_default_mat
 	var shape = SphereShape3D.new()
-	shape.radius = 10
+	shape.radius = 15
 	
 
 	for con in constellationships:
@@ -174,6 +181,7 @@ func generate_constellations():
 				sum_pos += p_start
 				
 		m.surface_end()
+		mesh_inst.material_override = con_default_mat
 		mesh_inst.mesh = m
 		mesh_inst.name = "constellation_" + con
 		add_child(mesh_inst)

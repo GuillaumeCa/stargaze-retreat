@@ -5,4 +5,6 @@ class_name XRPlayerController
 
 func _physics_process(delta: float) -> void:
 	if physical_hand:
+		physical_hand.visible = get_is_active()
+		
 		physical_hand.global_transform = global_transform

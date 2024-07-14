@@ -1,0 +1,64 @@
+[gd_scene load_steps=11 format=3 uid="uid://dx01cmmdr4ve0"]
+
+[ext_resource type="Script" path="res://scenes/shootingstar.gd" id="1_fh3q7"]
+[ext_resource type="Texture2D" uid="uid://lq1ogd8mq2qx" path="res://assets/textures/circle_05.png" id="1_otami"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_oyjel"]
+
+[sub_resource type="Gradient" id="Gradient_ql2r0"]
+offsets = PackedFloat32Array(0, 0.826087)
+colors = PackedColorArray(1, 0.949655, 0.416934, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_pta16"]
+gradient = SubResource("Gradient_ql2r0")
+
+[sub_resource type="Curve" id="Curve_88kdq"]
+_data = [Vector2(0, 1), 0.0, -1.7444, 0, 0, Vector2(1, 0.0798318), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_vyrym"]
+curve = SubResource("Curve_88kdq")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_orx4a"]
+orbit_velocity_max = 1.157
+gravity = Vector3(0, 0, 0)
+scale_curve = SubResource("CurveTexture_vyrym")
+color_ramp = SubResource("GradientTexture1D_pta16")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lx6gy"]
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("1_otami")
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_m25qi"]
+material = SubResource("StandardMaterial3D_lx6gy")
+size = Vector2(0.3, 0.3)
+
+[node name="shootingstar" type="RigidBody3D"]
+collision_mask = 0
+script = ExtResource("1_fh3q7")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_oyjel")
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.071995, 0)
+amount = 500
+lifetime = 0.4
+fixed_fps = 120
+interpolate = false
+fract_delta = false
+process_material = SubResource("ParticleProcessMaterial_orx4a")
+draw_pass_1 = SubResource("QuadMesh_m25qi")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 10.0
+one_shot = true
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

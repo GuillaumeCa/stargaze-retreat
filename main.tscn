@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://clg28sgt38q65"]
+[gd_scene load_steps=25 format=3 uid="uid://clg28sgt38q65"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_13g0i"]
 [ext_resource type="FontFile" uid="uid://kwj1tg7yu00k" path="res://assets/fonts/LilitaOne-Regular.ttf" id="2_rjay5"]
@@ -46,53 +46,21 @@ uv1_triplanar = true
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5xxra"]
 blend_mode = 1
-disable_ambient_light = true
-emission_enabled = true
-emission_texture = ExtResource("6_bbttl")
+shading_mode = 0
+albedo_texture = ExtResource("6_bbttl")
 billboard_mode = 1
 
 [sub_resource type="QuadMesh" id="QuadMesh_f7cuv"]
 material = SubResource("StandardMaterial3D_5xxra")
 size = Vector2(1.3, 1.3)
 
-[sub_resource type="Animation" id="Animation_ypn3c"]
-resource_name = "intro"
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Start/Title:position")
-tracks/0/interp = 2
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector3(-1.82615, 6.78446, -11.5132), Vector3(0, 3.47203, -7.28337)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Start/Info:position")
-tracks/1/interp = 2
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector3(0, -0.875862, -6.7967), Vector3(0, 1.87508, -6.7967)]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Start/Title:rotation")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector3(0.0435759, 0.0313686, 0.624237), Vector3(0.0536863, 0, 0)]
-}
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_8cb2x"]
+shading_mode = 0
+albedo_color = Color(0.169922, 0.169922, 0.169922, 1)
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_eoa4h"]
+shading_mode = 0
+albedo_color = Color(0.337891, 0.337891, 0.337891, 1)
 
 [sub_resource type="Animation" id="Animation_vr008"]
 length = 0.001
@@ -133,6 +101,45 @@ tracks/2/keys = {
 "values": [Vector3(0.0536863, 0, 0)]
 }
 
+[sub_resource type="Animation" id="Animation_ypn3c"]
+resource_name = "intro"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Start/Title:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(-1.82615, 6.78446, -11.5132), Vector3(0, 3.47203, -7.28337)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Start/Info:position")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, -0.875862, -6.7967), Vector3(0, 1.87508, -6.7967)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Start/Title:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0.0435759, 0.0313686, 0.624237), Vector3(0.0536863, 0, 0)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_tu7em"]
 _data = {
 "RESET": SubResource("Animation_vr008"),
@@ -148,12 +155,11 @@ starfield = NodePath("Stars")
 [node name="Start" type="Node3D" parent="."]
 
 [node name="Title" type="MeshInstance3D" parent="Start"]
-transform = Transform3D(1, 0, 0, 0, 0.998559, -0.0536606, 0, 0.0536605, 0.998559, 0, 3.47203, -7.28337)
+transform = Transform3D(1, 0, 0, 0, 0.998559, -0.0536605, 0, 0.0536605, 0.998559, 0, 3.47203, -7.28337)
 mesh = SubResource("TextMesh_h0bj0")
 
 [node name="Info" type="Label3D" parent="Start"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.87508, -6.7967)
-visible = false
 pixel_size = 0.0075
 modulate = Color(0.990234, 0.990234, 0.990234, 1)
 text = "Press Right Trigger to Continue
@@ -213,6 +219,8 @@ multimesh = ExtResource("5_lb1bn")
 script = ExtResource("5_ntfwr")
 select_mesh = NodePath("../Select")
 select_label = NodePath("../SelectLabel")
+con_default_mat = SubResource("ORMMaterial3D_8cb2x")
+con_highlight_mat = SubResource("ORMMaterial3D_eoa4h")
 
 [node name="Trees" type="Node3D" parent="."]
 
@@ -231,11 +239,16 @@ libraries = {
 }
 autoplay = "intro"
 
+[node name="ShootingStarTimer" type="Timer" parent="."]
+wait_time = 10.0
+autostart = true
+
 [connection signal="on_pointer_collide" from="XRPlayer" to="." method="_on_xr_player_on_pointer_collide"]
 [connection signal="on_pointer_exit_collider" from="XRPlayer" to="." method="_on_xr_player_on_pointer_exit_collider"]
 [connection signal="input_vector2_changed" from="XRPlayer/LeftController" to="." method="_on_left_controller_input_vector_2_changed"]
 [connection signal="button_pressed" from="XRPlayer/RightController" to="." method="_on_right_controller_button_pressed"]
 [connection signal="on_next_guess" from="Stars" to="." method="_on_stars_on_next_guess"]
 [connection signal="on_success" from="Stars" to="." method="_on_stars_on_success"]
+[connection signal="timeout" from="ShootingStarTimer" to="." method="_on_timer_timeout"]
 
 [editable path="XRPlayer"]
