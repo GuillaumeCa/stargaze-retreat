@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://qq451u0j8gv1"]
+[gd_scene load_steps=9 format=3 uid="uid://qq451u0j8gv1"]
 
 [ext_resource type="Texture2D" uid="uid://bdkb1kokic1to" path="res://assets/textures/constellation_icons/orion.svg" id="1_pms3w"]
 [ext_resource type="Script" path="res://scenes/constellation_display.gd" id="1_wpmrd"]
 [ext_resource type="AudioStream" uid="uid://dc082th3asej3" path="res://assets/sfx/bells.mp3" id="2_urtwa"]
+[ext_resource type="PackedScene" uid="uid://xyceyxbxn4fu" path="res://scenes/constellation_viewer.tscn" id="4_c0epx"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nlxwo"]
 emission_enabled = true
@@ -19,8 +20,12 @@ instance_count = 30
 mesh = SubResource("SphereMesh_7aipf")
 buffer = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[node name="ConstellationDisplay" type="Node3D"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_1nbtr"]
+viewport_path = NodePath("SubViewport")
+
+[node name="ConstellationDisplay" type="Node3D" node_paths=PackedStringArray("constellation_viewer")]
 script = ExtResource("1_wpmrd")
+constellation_viewer = NodePath("SubViewport/ConstellationViewer")
 
 [node name="Hint" type="AudioStreamPlayer3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00273866, 0, 0)
@@ -34,6 +39,7 @@ multimesh = SubResource("MultiMesh_5rug5")
 
 [node name="Text" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00273866, 0, 0)
+visible = false
 pixel_size = 0.0003
 text = "Find Orion
 Constellation"
@@ -44,5 +50,17 @@ line_spacing = -1.27
 
 [node name="ConstellationIcon" type="Sprite3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0176556, 0, 0)
+visible = false
 pixel_size = 0.0004
 texture = ExtResource("1_pms3w")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+transparent_bg = true
+
+[node name="ConstellationViewer" parent="SubViewport" instance=ExtResource("4_c0epx")]
+
+[node name="ConstellationSprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.936971, 0.349406, 0, -0.349406, 0.936971, -0.0199945, 0.00324233, 7.45058e-09)
+visible = false
+pixel_size = 0.0002
+texture = SubResource("ViewportTexture_1nbtr")

@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://xyceyxbxn4fu"]
+
+[ext_resource type="Script" path="res://scenes/constellation_viewer.gd" id="1_yycra"]
+
+[node name="ConstellationViewer" type="Node2D"]
+script = ExtResource("1_yycra")
+metadata/_edit_horizontal_guides_ = [512.0]
+metadata/_edit_vertical_guides_ = [512.0]
+
+[node name="Line2D" type="Line2D" parent="."]
+points = PackedVector2Array(132, 264, 240, 155, 392, 278, 286, 392, 189, 349)
+width = 2.0
+default_color = Color(0.330078, 0.330078, 0.330078, 1)

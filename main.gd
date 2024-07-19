@@ -45,7 +45,7 @@ func _on_right_controller_button_pressed(name: String) -> void:
 			$Start.hide()
 			
 			var to_guess = starfield.constellations_to_guess[0]
-			var const_name = starfield.constellation_names[to_guess]
+			var const_name = StarDB.constellation_names[to_guess]
 			xr_player.constellation_display.set_constellation(to_guess, const_name)
 			return
 		
@@ -82,7 +82,7 @@ func _on_xr_player_on_pointer_exit_collider(collider: Variant) -> void:
 
 
 func _on_stars_on_next_guess(to_guess: Variant) -> void:
-	var name = starfield.constellation_names[to_guess]
+	var name = StarDB.constellation_names[to_guess]
 	xr_player.left_controller.trigger_haptic_pulse("haptic", 50, 0.5, 0.1, 0)
 	xr_player.left_controller.trigger_haptic_pulse("haptic", 50, 0.5, 0.1, 0.5)
 	xr_player.constellation_display.set_constellation(to_guess, name)

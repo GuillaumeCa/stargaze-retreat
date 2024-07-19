@@ -243,6 +243,8 @@ autoplay = "intro"
 wait_time = 10.0
 autostart = true
 
+[connection signal="focus_gained" from="XRConfig" to="." method="_on_focus"]
+[connection signal="focus_lost" from="XRConfig" to="." method="_on_focus_lost"]
 [connection signal="on_pointer_collide" from="XRPlayer" to="." method="_on_xr_player_on_pointer_collide"]
 [connection signal="on_pointer_exit_collider" from="XRPlayer" to="." method="_on_xr_player_on_pointer_exit_collider"]
 [connection signal="input_vector2_changed" from="XRPlayer/LeftController" to="." method="_on_left_controller_input_vector_2_changed"]

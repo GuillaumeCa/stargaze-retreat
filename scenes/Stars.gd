@@ -7,22 +7,16 @@ class_name StarField
 @export var con_default_mat: ORMMaterial3D
 @export var con_highlight_mat: ORMMaterial3D
 
+
+@export var max_mag = 1.5
+@export var min_mag = 7.5
+
+
 signal on_next_guess(to_guess)
 signal on_success
 
-var db: SQLite = null
-
-var max_mag = 1.5
-var min_mag = 7.5
-
-var stars = []
-var stars_by_id = {}
-
-# links between the stars forming the constellations
-var constellationships = {}
-
-# constellation abr => latin names
-var constellation_names = {}
+var user_lat = 48.8011
+var user_long = 2.1716
 
 # mesh of the lines between the stars of the constellations
 var constellation_links = {}
@@ -35,40 +29,22 @@ var current_con_guess = 0
 
 var constellations_revealed = []
 
-var won = false
+var won = true
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	db = SQLite.new()
-	
-	db.path = "res://assets/stars.sqlite3"
-	db.read_only = true
-	db.open_db()
-	
-	
-	db.query("SELECT hip, proper, ci, ra, dec, x, y, z, mag, c.\"name\" as \"const\" from stars s join constellations c on c.abr = s.con where mag > -1.5 order by mag LIMIT 10000")
-	stars = db.query_result
-
-	db.query("SELECT con, links from constellation_links")
-	for con in db.query_result:
-		constellationships[con["con"]] = con["links"].split(",")
-	
-	db.query("SELECT abr, name from constellations")
-	for con in db.query_result:
-		constellation_names[con["abr"]] = con["name"]
-
 	generate_stars()
 	generate_constellations()
+	generate_constellations_to_guess()
 	
-	rotate_y(randi_range(0, 2*PI))
-	constellations_to_guess.shuffle()
+	#rotate_y(randi_range(0, 2*PI))
 
 func highlight_star(id):
 	select_label.hide()
 	select_mesh.hide()
 	
-	for star in stars:
+	for star in StarDB.stars:
 		if star["hip"] == str(id):
 			var pos = star["body"].global_position
 			select_mesh.position = pos
@@ -84,6 +60,7 @@ func highlight_star(id):
 func guess_constellation(con):
 	var to_guess = constellations_to_guess[current_con_guess]
 	if con == to_guess:
+		prints("matched constellation !", con)
 		constellations_revealed.append(con)
 		constellation_labels[con].show()
 		if current_con_guess + 1 < constellations_to_guess.size():
@@ -96,7 +73,7 @@ func guess_constellation(con):
 			
 
 func highlight_constel(con, pos: Vector3):
-	var name = constellation_names[con]
+	var name = StarDB.constellation_names[con]
 	#select_mesh.position = pos
 	#select_mesh.show()
 	
@@ -127,8 +104,8 @@ func generate_stars():
 	var i = 0
 	var shape = SphereShape3D.new()
 	shape.radius = 1
-	for star in stars:
-		stars_by_id[star["hip"]] = star
+	for star in StarDB.stars:
+		StarDB.stars_by_id[star["hip"]] = star
 		
 		var adj_mag = max(1 - ((star["mag"] + max_mag) / (max_mag + min_mag)), 0)
 		
@@ -166,17 +143,18 @@ func generate_constellations():
 	shape.radius = 15
 	
 
-	for con in constellationships:
+	for con in StarDB.constellationships:
 		# draw lines between the stars forming the constellation
 		var mesh_inst = MeshInstance3D.new()
 		var m = ImmediateMesh.new()
 		m.surface_begin(Mesh.PRIMITIVE_LINES, mat)
 		
 		var sum_pos = Vector3.ZERO
-		for i in len(constellationships[con]):
-			var start = constellationships[con][i]
-			if start in stars_by_id:
-				var p_start = get_star_pos(stars_by_id[start])
+		for i in len(StarDB.constellationships[con]):
+			var star_id = StarDB.constellationships[con][i]
+			if star_id in StarDB.stars_by_id:
+				var star = StarDB.stars_by_id[star_id]
+				var p_start = get_star_pos(star)
 				m.surface_add_vertex(p_start)
 				sum_pos += p_start
 				
@@ -189,7 +167,7 @@ func generate_constellations():
 		mesh_inst.show()
 		
 		# calculate the mean position of the constellation to place labels + collision
-		var con_mean_pos = sum_pos / len(constellationships[con])
+		var con_mean_pos = sum_pos / len(StarDB.constellationships[con])
 		
 		# add collision to the constellation so that it can be selected
 		var body = StaticBody3D.new()
@@ -206,33 +184,56 @@ func generate_constellations():
 		label.pixel_size = 0.05
 		label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		label.double_sided = false
-		label.text = constellation_names[con]
+		label.text = StarDB.constellation_names[con]
 		label.position = con_mean_pos
 		label.hide()
 		add_child(label)
 		constellation_labels[con] = label
 
+func generate_constellations_to_guess():
+	var con_to_guess = []
+	for con in StarDB.constellationships:
+		var ok = true
+		for i in len(StarDB.constellationships[con]):
+			var star_id = StarDB.constellationships[con][i]
+			if star_id in StarDB.stars_by_id:
+				var star = StarDB.stars_by_id[star_id]
+				var pos = get_star_pos(star)
+				if pos.y < 5:
+					ok = false
+		if ok:
+			prints(StarDB.constellation_names[con])
+			con_to_guess.append(con)
+	
+	con_to_guess.shuffle()
+	constellations_to_guess = con_to_guess.slice(0, 5)
+	print(constellations_to_guess)
+
 # Calculate the cartesian coord of a star based on the ra and dec. 
 # The position is calculated at a fixed distance of 100m
 func get_star_pos(star: Dictionary) -> Vector3:
-	var ra = -deg_to_rad(star["ra"] * 15)
-	var dec = deg_to_rad(star["dec"])
+	#var ra = -deg_to_rad(star["ra"] * 15)
+	#var dec = deg_to_rad(star["dec"])
 	
-	#var adj = adjust_ra_dec(ra, dec, "2024-07-10T21:28:00", deg_to_rad(2.1716), deg_to_rad(48.8011))
+	var ra = star["ra"] * 15
+	var dec = star["dec"]
+	
+	# "2024-07-18T21:28:00"
+	var adj = adjust_ra_dec(ra, dec, Time.get_unix_time_from_system(), user_lat, user_long)
 	#prints(ra, dec, adj)
-	#var alt = adj.x
-	#var az = adj.y
+	var alt = adj.x
+	var az = adj.y
 	#
-	#return Vector3(
-		#cos(alt) * cos(az),
-		#sin(alt),
-		#cos(alt) * sin(az)
-	#) * 100
 	return Vector3(
-		cos(ra) * cos(dec),
-		sin(dec),
-		sin(ra) * cos(dec)
+		cos(alt) * cos(az),
+		sin(alt),
+		cos(alt) * sin(az)
 	) * 100
+	#return Vector3(
+		#cos(ra) * cos(dec),
+		#sin(dec),
+		#sin(ra) * cos(dec)
+	#) * 100
 
 # compute the rgb color of a star based on its color index (ci)
 func ci_to_rgb(ci_raw: float) -> Color:
@@ -262,18 +263,42 @@ func ci_to_rgb(ci_raw: float) -> Color:
 			0.71 - 0.45 * ci,
 			0.61 - 0.44 * ci
 		)
+
+## Calculate the alt + az in radians based on ra/dec and long/lat in degrees
+func adjust_ra_dec(ra: float, dec: float, unix_date: int, lat: float, long: float) -> Vector2:
+	var unix_time_j2000 = Time.get_unix_time_from_datetime_string("2000-01-01T00:00:00")
+	var unix_time = unix_date
 	
-func adjust_ra_dec(ra, dec, date, long, lat) -> Vector2:
-	var unix_time = Time.get_unix_time_from_datetime_string(date)
-	var julian_time = (unix_time / 86400) + 2440587.5
-	var gmst = fmod(18.697374558+24.06570982441908 * (julian_time - 2451545.0), 24)
-	prints("gmst", gmst)
-	var lst = gmst + (long/15.0)
-	prints("lst", lst)
+	#var julian_time = (unix_time / 86400) + 2440587.5
+	#$ResultDebug.text += "\njulian time: " + str(julian_time)
+	#var gmst = fmod(18.697374558+24.06570982441908 * (julian_time - 2451545.0), 24)
+	#prints("gmst", gmst)
+	
+	
+	var days = (unix_time-unix_time_j2000) / 86400.0
+	
+	var time_dict = Time.get_datetime_dict_from_unix_time(unix_time)
+	var ut = time_dict.get("hour") + (time_dict.get("minute") / 60.0)
+	
+	var lst = 100.46 + (0.985647 * days) + long + (15 * ut)
+	# make sure lst is in the range 0 to 360 degrees
+	if lst < 0:
+		lst = lst + 360
+	
 	var ha = lst - ra
-	prints("ha", ha)
 	
-	var alt = asin(sin(dec) * sin(lat) + cos(dec) * cos(ha))
-	var az = acos((sin(dec) - sin(alt) * sin(lat)) / (cos(alt) * cos(lat)))
+	var dec_d = deg_to_rad(dec)
+	var lat_d = deg_to_rad(lat)
+	var ha_d = deg_to_rad(ha)
+	
+	
+	var alt = sin(dec_d) * sin(lat_d) + cos(dec_d) * cos(lat_d) * cos(ha_d)
+	alt = asin(alt)
+	var az = (sin(dec_d) - (sin(alt) * sin(lat_d))) / (cos(alt) * cos(lat_d))
+	az = acos(az)
+	
+	if sin(ha_d) >= 0:
+		az = 2*PI - az
+	
 	return Vector2(alt, az)
 
