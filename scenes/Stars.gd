@@ -15,8 +15,10 @@ class_name StarField
 signal on_next_guess(to_guess)
 signal on_success
 
-var user_lat = 48.8011
-var user_long = 2.1716
+var user_lat = 48.8
+var user_long = 2.1
+
+var time = 0
 
 # mesh of the lines between the stars of the constellations
 var constellation_links = {}
@@ -34,11 +36,21 @@ var won = true
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	generate_stars()
-	generate_constellations()
+	seed(0)
+	
+	time = Time.get_unix_time_from_system()
+	
+	generate_starfield()
 	generate_constellations_to_guess()
 	
 	#rotate_y(randi_range(0, 2*PI))
+
+func generate_starfield():
+	for child in get_children():
+		child.queue_free()
+	
+	generate_stars()
+	generate_constellations()
 
 func highlight_star(id):
 	select_label.hide()
@@ -219,7 +231,7 @@ func get_star_pos(star: Dictionary) -> Vector3:
 	var dec = star["dec"]
 	
 	# "2024-07-18T21:28:00"
-	var adj = adjust_ra_dec(ra, dec, Time.get_unix_time_from_system(), user_lat, user_long)
+	var adj = adjust_ra_dec(ra, dec, time, user_lat, user_long)
 	#prints(ra, dec, adj)
 	var alt = adj.x
 	var az = adj.y
